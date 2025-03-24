@@ -1,0 +1,331 @@
+Section A
+Attempt
+Question 2: 
+
+
+Data Collection and Preparation 
+These are the task I will perform:
+Handling missing values
+Converting categorical values ("YES"/"NO") into numerical format
+Encoding the target variable ("Result") for classification
+Data Cleaning Summary
+✔ Converted "YES"/"NO" to 1/0 for categorical columns
+✔ Encoded "Sex" as 1 (Male) and 0 (Female)
+✔ Encoded target variable "Result" (POSITIVE = 1, NEGATIVE = 0)
+✔ Removed "PENDING" results
+✔ Filled missing birth years with the median
+✔ Set missing symptom values to 0
+
+Exploratory Data Analysis (EDA) 
+You will need to :
+i.Check distribution of positive vs. negative cases
+ii.Visualize symptom frequency among cases
+iii.Identify most predictive symptoms
+
+Using Python see the codebook used:
+Handling missing values and converting categorical variables
+
+import necessary libraries
+import pandas as pd
+
+file_path = "/mnt/data/COVID19.xlsx"
+xls = pd.ExcelFile(file_path)
+
+
+Convert 'YES'/'NO' to 1/0 for binary categorical columns
+binary_columns = df.select_dtypes(include=['object']).columns.difference(['Sex', 'Result'])
+
+for col in binary_columns:
+    df[col] = df[col].map({'YES': 1, 'NO': 0})
+
+Convert 'Sex' column to binary encoding (Male = 1, Female = 0)
+df['Sex'] = df['Sex'].map({'MALE': 1, 'FEMALE': 0})
+
+Handle missing values: Fill binary columns with 0 (assuming no symptom if missing)
+df[binary_columns] = df[binary_columns].fillna(0)
+
+Fill missing 'Birth Year' with median birth year
+df['Birth Year'] = df['Birth Year'].fillna(df['Birth Year'].median())
+
+Encode the target variable 'Result'
+df['Result'] = df['Result'].map({'POSITIVE': 1, 'NEGATIVE': 0})
+
+Drop rows where 'Result' is still NaN (e.g., 'PENDING' cases)
+df = df.dropna(subset=['Result'])
+Display dataset info after cleaning
+df.info(), df.head()
+
+Result
+      Sex  Birth Year Chest pain Chills or sweats Confused or disoriented  \
+0    MALE      1967.0         NO               NO                      NO   
+1    MALE      1976.0        NaN              NaN                     NaN   
+2    MALE      1988.0         NO               NO                      NO   
+3    MALE      1980.0        NaN              NaN                     NaN   
+4  FEMALE      1978.0         NO               NO                      NO   
+
+  Cough Diarrhea Difficulty breathing or Dyspnea  \
+0    NO       NO                              NO   
+1   NaN      NaN                             NaN   
+2    NO       NO                              NO   
+3   NaN      NaN                             NaN   
+4   YES       NO                             YES   
+
+  Digested blood or coffee grounds in vomit  \
+0                                       NaN   
+1                                       NaN   
+2                                       NaN   
+3                                       NaN   
+4                                       NaN   
+
+  Pain behind eyes or Sensitivity to light  ... Cough with sputum  \
+0                                      NaN  ...                NO   
+1                                      NaN  ...               NaN   
+2                                      NaN  ...               NaN   
+3                                      NaN  ...               NaN   
+4                                      NaN  ...               NaN   
+
+  Cough with heamoptysis Enlarged lymph nodes Wheezing Skin ulcers  \
+0                     NO                   NO       NO          NO   
+1                    NaN                  NaN      NaN         NaN   
+2                    NaN                  NaN      NaN         NaN   
+3                    NaN                  NaN      NaN         NaN   
+4                    NaN                  NaN      NaN         NaN   
+
+  Inability to walk Indrawing of chest wall Other complications  \
+0                NO                      NO                 1.0   
+1               NaN                     NaN                 NaN   
+2               NaN                     NaN                 NaN   
+3               NaN                     NaN                 NaN   
+4               NaN                     NaN                 NaN   
+
+  Specify other complications    Result  
+0                         NaN   PENDING  
+1                         NaN       NaN  
+2                         NaN  NEGATIVE  
+3                         NaN       NaN  
+4                         NaN  NEGATIVE  
+
+[5 rows x 47 columns]
+
+STDOUT/STDERR
+<class 'pandas.core.frame.DataFrame'>
+Int64Index: 53701 entries, 2 to 109925
+Data columns (total 47 columns):
+ #   Column                                     Non-Null Count  Dtype  
+---  ------                                     --------------  -----  
+ 0   Sex                                        52718 non-null  float64
+ 1   Birth Year                                 53701 non-null  float64
+ 2   Chest pain                                 53701 non-null  float64
+ 3   Chills or sweats                           53701 non-null  float64
+ 4   Confused or disoriented                    53701 non-null  float64
+ 5   Cough                                      53701 non-null  float64
+ 6   Diarrhea                                   53701 non-null  float64
+ 7   Difficulty breathing or Dyspnea            53701 non-null  float64
+ 8   Digested blood or coffee grounds in vomit  53701 non-null  float64
+ 9   Pain behind eyes or Sensitivity to light   53701 non-null  float64
+ 10  Bleeding from the eyes                     53701 non-null  float64
+ 11  Fatigue or general weakness                53701 non-null  float64
+ 12  Fever                                      53701 non-null  float64
+ 13  Fluid in the lung cavity                   53701 non-null  float64
+ 14  Fluid in lung cavity in auscultation       53701 non-null  float64
+ 15  Fluid in cavity through X-Ray              53701 non-null  float64
+ 16  Bleeding of the gums                       53701 non-null  float64
+ 17  Headache                                   53701 non-null  float64
+ 18  Joint pain or arthritis                    53701 non-null  float64
+ 19  Thorax (sore throat)                       53701 non-null  float64
+ 20  Malaise                                    53701 non-null  float64
+ 21  Muscle pain                                53701 non-null  float64
+ 22  Nausea                                     53701 non-null  float64
+ 23  Other clinical symptoms                    53701 non-null  float64
+ 24  Pharyngeal exudate                         53701 non-null  float64
+ 25  Rapid breathing                            53701 non-null  float64
+ 26  Runny nose                                 53701 non-null  float64
+ 27  Maculopapular rash                         53701 non-null  float64
+ 28  Sore throat or pharyngitis                 53701 non-null  float64
+ 29  Bleeding or bruising                       53701 non-null  float64
+ 30  Vomiting                                   53701 non-null  float64
+ 31  Abnormal lung X-Ray findings               53701 non-null  float64
+ 32  Conjunctivitis                             53701 non-null  float64
+ 33  Acute respiratory distress syndrome        53701 non-null  float64
+ 34  Pneumonia (clinical or radiologic)         53701 non-null  float64
+ 35  Loss of Taste                              53701 non-null  float64
+ 36  Loss of Smell                              53701 non-null  float64
+ 37  Cough with sputum                          53701 non-null  float64
+ 38  Cough with heamoptysis                     53701 non-null  float64
+ 39  Enlarged lymph nodes                       53701 non-null  float64
+ 40  Wheezing                                   53701 non-null  float64
+ 41  Skin ulcers                                53701 non-null  float64
+ 42  Inability to walk                          53701 non-null  float64
+ 43  Indrawing of chest wall                    53701 non-null  float64
+ 44  Other complications                        12399 non-null  float64
+ 45  Specify other complications                53701 non-null  float64
+ 46  Result                                     53701 non-null  float64
+dtypes: float64(47)
+memory usage: 19.7 MB
+Result
+(None,
+    Sex  Birth Year  Chest pain  Chills or sweats  Confused or disoriented  \
+ 2  1.0      1988.0         0.0               0.0                      0.0   
+ 4  0.0      1978.0         0.0               0.0                      0.0   
+ 5  1.0      1995.0         0.0               0.0                      0.0   
+ 6  1.0      1967.0         0.0               0.0                      0.0   
+ 7  1.0      2015.0         0.0               0.0                      0.0   
+ 
+    Cough  Diarrhea  Difficulty breathing or Dyspnea  \
+ 2    0.0       0.0                              0.0   
+ 4    1.0       0.0                              1.0   
+ 5    1.0       0.0                              0.0   
+ 6    0.0       0.0                              0.0   
+ 7    0.0       0.0                              0.0   
+ 
+    Digested blood or coffee grounds in vomit  \
+ 2                                        0.0   
+ 4                                        0.0   
+ 5                                        0.0   
+ 6                                        0.0   
+ 7                                        0.0   
+ 
+    Pain behind eyes or Sensitivity to light  ...  Cough with sputum  \
+ 2                                       0.0  ...                0.0   
+ 4                                       0.0  ...                0.0   
+ 5                                       0.0  ...                0.0   
+ 6                                       0.0  ...                0.0   
+ 7                                       0.0  ...                0.0   
+ 
+    Cough with heamoptysis  Enlarged lymph nodes  Wheezing  Skin ulcers  \
+ 2                     0.0                   0.0       0.0          0.0   
+ 4                     0.0                   0.0       0.0          0.0   
+ 5                     0.0                   0.0       0.0          0.0   
+ 6                     0.0                   0.0       0.0          0.0   
+ 7                     0.0                   0.0       0.0          0.0   
+ 
+    Inability to walk  Indrawing of chest wall  Other complications  \
+ 2                0.0                      0.0                  NaN   
+ 4                0.0                      0.0                  NaN   
+ 5                0.0                      0.0                  NaN   
+ 6                0.0                      0.0                  NaN   
+ 7                0.0                      0.0                  1.0   
+ 
+    Specify other complications  Result  
+ 2                          0.0     0.0  
+ 4                          0.0     0.0  
+ 5                          0.0     0.0  
+ 6                          0.0     0.0  
+ 7                          0.0     0.0  
+ 
+ [5 rows x 47 columns])
+
+
+Initial Observations:
+The dataset has 47 columns (features) including symptoms, medical conditions, and test results.
+
+The "Result" column contains the COVID-19 test outcome (POSITIVE, NEGATIVE, PENDING, NaN).
+
+Several features have missing values (NaN).
+
+Most symptom-related columns are categorical with "YES" / "NO" values.
+
+The "Birth Year" column is numerical but has missing values.
+
+The dataset is imbalanced, with more negative cases than positive ones. This could 
+impact model training, requiring techniques like oversampling (SMOTE) or class 
+weighting.
+
+
+Then I will analyze symptom frequency among positive cases to see which symptoms are
+most associated with COVID-19.
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+Countplot of COVID-19 test results
+plt.figure(figsize=(6, 4))
+sns.countplot(x=df["Result"], palette="coolwarm")
+plt.xticks(ticks=[0, 1], labels=["Negative", "Positive"])
+plt.xlabel("COVID-19 Test Result")
+plt.ylabel("Count")
+plt.title("Distribution of COVID-19 Cases in Dataset")
+plt.show()
+
+
+The most common symptoms among COVID-19 positive cases include Fever, Cough, Fatigue, Difficulty Breathing, 
+and Loss of Taste/Smell. These will likely be strong predictors in the model.
+
+Feature Engineering, including:
+
+
+Selecting the most relevant features
+
+Handling class imbalance (SMOTE or weighting)
+
+Scaling numerical values (if needed)
+
+Compute the percentage of positive cases per symptom
+symptom_cols = df.columns[2:-1]  # Exclude 'Sex', 'Birth Year', and 'Result'
+positive_cases = df[df["Result"] == 1][symptom_cols].mean() * 100
+
+Plot top 10 symptoms most correlated with positive cases
+top_symptoms = positive_cases.sort_values(ascending=False).head(10)
+
+plt.figure(figsize=(10, 6))
+sns.barplot(x=top_symptoms.values, y=top_symptoms.index, palette="Reds_r")
+plt.xlabel("Percentage of Positive Cases (%)")
+plt.ylabel("Symptoms")
+plt.title("Top 10 Symptoms Among COVID-19 Positive Cases")
+plt.show()
+
+
+from sklearn.model_selection import train_test_split
+from imblearn.over_sampling import SMOTE
+from sklearn.preprocessing import StandardScaler
+
+# Define features (X) and target (y)
+X = df.drop(columns=["Result"])  # All columns except target
+y = df["Result"]  # Target variable
+
+# Split into train and test sets (80% training, 20% testing)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+
+# Apply SMOTE to balance classes in the training set
+smote = SMOTE(random_state=42)
+X_train_smote, y_train_smote = smote.fit_resample(X_train, y_train)
+
+# Standardize numerical values (Birth Year)
+scaler = StandardScaler()
+X_train_smote["Birth Year"] = scaler.fit_transform(X_train_smote[["Birth Year"]])
+X_test["Birth Year"] = scaler.transform(X_test[["Birth Year"]])
+
+# Check new class balance
+y_train_smote.value_counts(), y_test.value_counts()
+
+
+EDA Insights:
+Imbalanced Data: More negative cases than positive cases.
+
+Strongest Predictors: Fever, cough, difficulty breathing, and some medical conditions have high correlation with COVID-19 positivity.
+
+Next Steps:
+
+Feature selection based on correlations.
+
+Train models like Logistic Regression, Decision Tree, Random Forest, and Gradient Boosting.
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+Class Distribution (COVID-19 Positive vs. Negative)
+plt.figure(figsize=(6, 4))
+sns.countplot(x=df['Result'], palette=['blue', 'red'])
+plt.xticks(ticks=[0, 1], labels=['Negative', 'Positive'])
+plt.title("COVID-19 Test Results Distribution")
+plt.xlabel("Test Result")
+plt.ylabel("Count")
+plt.show()
+
+Correlation Heatmap (Top 10 correlated features)
+plt.figure(figsize=(12, 8))
+correlation_matrix = df.corr()
+top_corr_features = correlation_matrix['Result'].abs().sort_values(ascending=False).head(11).index
+sns.heatmap(df[top_corr_features].corr(), annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5)
+plt.title("Top Correlated Features with COVID-19 Result")
+plt.show()
