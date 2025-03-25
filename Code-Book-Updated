@@ -1,0 +1,76 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, classification_report
+import pickle
+from flask import Flask, request, jsonify
+
+# Load Data
+data_path = "COVID19.xlsx"  # Update with actual file path
+df = pd.read_excel(data_path)
+
+# Initial Data Inspection
+print("Dataset Overview:")
+print(df.info())
+print("\nFirst 5 Rows:")
+print(df.head())
+print("\nSummary Statistics:")
+print(df.describe())
+
+# Checking for missing values
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+# Data Cleaning and Preparation
+df.dropna(inplace=True)  # Removing missing values (alternative: imputation if needed)
+df = pd.get_dummies(df, drop_first=True)  # Convert categorical to numeric
+
+# Feature Selection
+y = df['COVID_Positive']  # Target variable
+X = df.drop(columns=['COVID_Positive'])
+
+# Train-Test Split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Data Scaling
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Model Training (Random Forest)
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train_scaled, y_train)
+
+# Model Evaluation
+y_pred = model.predict(X_test_scaled)
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("Precision:", precision_score(y_test, y_pred))
+print("Recall:", recall_score(y_test, y_pred))
+print("F1 Score:", f1_score(y_test, y_pred))
+print("AUC-ROC:", roc_auc_score(y_test, y_pred))
+
+# Save Model
+with open("covid_model.pkl", "wb") as f:
+    pickle.dump(model, f)
+
+# Flask API
+def create_app():
+    app = Flask(__name__)
+    
+    @app.route('/predict', methods=['POST'])
+    def predict():
+        data = request.get_json()
+        features = np.array(data['features']).reshape(1, -1)
+        features_scaled = scaler.transform(features)
+        prediction = model.predict(features_scaled)[0]
+        return jsonify({'COVID_Prediction': int(prediction)})
+    
+    return app
+
+if __name__ == "__main__":
+    app = create_app()
+    app.run(debug=True)
